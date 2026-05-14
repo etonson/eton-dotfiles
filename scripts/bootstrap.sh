@@ -3,7 +3,7 @@
 # eton-dotfiles bootstrap script
 set -e
 
-DOTFILES=$HOME/dotfiles
+DOTFILES=$HOME/.dotfiles
 
 echo "🚀 Starting eton-dotfiles bootstrap..."
 
@@ -17,18 +17,14 @@ echo "🔗 Setting up symbolic links..."
 mkdir -p ~/.config
 
 # Zsh
-if [ ! -L ~/.config/zsh ]; then
-    rm -rf ~/.config/zsh
-    ln -s "$DOTFILES/zsh" ~/.config/zsh
-    echo "✅ Linked Zsh config"
-fi
+echo "🔗 Linking Zsh config..."
+rm -rf ~/.config/zsh
+ln -s "$DOTFILES/zsh" ~/.config/zsh
 
 # WezTerm
-if [ ! -L ~/.config/wezterm ]; then
-    rm -rf ~/.config/wezterm
-    ln -s "$DOTFILES/wezterm" ~/.config/wezterm
-    echo "✅ Linked WezTerm config"
-fi
+echo "🔗 Linking WezTerm config..."
+rm -rf ~/.config/wezterm
+ln -s "$DOTFILES/wezterm" ~/.config/wezterm
 
 # ZDOTDIR in ~/.zshenv
 if [ ! -f "$HOME/.zshenv" ] || ! grep -q "ZDOTDIR" "$HOME/.zshenv"; then

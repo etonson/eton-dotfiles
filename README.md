@@ -2,6 +2,24 @@
 
 My unified professional development environment configuration.
 
+## 🗺️ Project Map
+
+```text
+~/dotfiles/
+├── zsh/                # 所有 Zsh 相關 (原本的 eton-zshrc)
+│   ├── .zshrc          # 主要設定檔
+│   ├── .p10k.zsh       # Powerlevel10k 提示字元風格設定
+│   └── README.md
+├── wezterm/            # 所有 WezTerm 相關 (原本的 eton-wezterm)
+│   ├── wezterm.lua     # WezTerm 功能與配色設定
+│   └── README.md
+├── scripts/            # 跨工具的安裝與檢查腳本
+│   └── bootstrap.sh    # 一鍵安裝所有東西的總入口
+├── .zshenv             # 放在 $HOME 的引導檔 (指向 ~/dotfiles/zsh)
+├── README.md           # 整個環境的總體說明
+└── .gitignore
+```
+
 ## 📂 Structure
 
 - `zsh/`: Zsh configuration (Powerlevel10k, plugins, and custom functions like `extract-commit`).

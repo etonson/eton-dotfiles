@@ -5,18 +5,18 @@
 
 set -e
 
-echo "🚀 Starting Zsh & WezTerm environment installation..."
+echo "Starting Zsh & WezTerm environment installation..."
 
 ############################################
 # 1. Install System Dependencies
 ############################################
-echo "📦 Installing system packages..."
+echo "Installing system packages..."
 sudo apt update
 sudo apt install -y zsh git curl wget unzip fonts-powerline
 
 # Check for WezTerm
 if ! command -v wezterm &> /dev/null; then
-    echo "⚠️ WezTerm not found. Please install it from: https://wezfurlong.org/wezterm/install/linux.html"
+    echo "WezTerm not found. Please install it from: https://wezfurlong.org/wezterm/install/linux.html"
 fi
 
 ############################################
@@ -24,14 +24,14 @@ fi
 ############################################
 if [ ! -f "$HOME/.zshenv" ] || ! grep -q "ZDOTDIR" "$HOME/.zshenv"; then
     echo 'export ZDOTDIR=$HOME/.config/zsh' >> "$HOME/.zshenv"
-    echo "✅ ZDOTDIR set in ~/.zshenv"
+    echo "ZDOTDIR set in ~/.zshenv"
 fi
 
 ############################################
 # 3. Install Oh My Zsh
 ############################################
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "🚀 Installing Oh My Zsh..."
+    echo "Installing Oh My Zsh..."
     RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
@@ -40,7 +40,7 @@ fi
 ############################################
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 
-echo "🛠️ Installing Powerlevel10k and Plugins..."
+echo "Installing Powerlevel10k and Plugins..."
 
 # Powerlevel10k
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
@@ -64,20 +64,20 @@ FONT_DIR="$HOME/.local/share/fonts"
 mkdir -p "$FONT_DIR"
 
 if [ ! -f "$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf" ]; then
-    echo "🔤 Installing JetBrainsMono Nerd Font..."
+    echo "Installing JetBrainsMono Nerd Font..."
     TEMP_DIR=$(mktemp -d)
     cd "$TEMP_DIR"
     wget -q https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
     unzip -o JetBrainsMono.zip -d "$FONT_DIR"
     fc-cache -fv
     rm -rf "$TEMP_DIR"
-    echo "✅ Font installed"
+    echo "Font installed"
 fi
 
 ############################################
 # 6. Configure WezTerm (High Contrast)
 ############################################
-echo "🎨 Configuring WezTerm with high contrast settings..."
+echo "Configuring WezTerm with high contrast settings..."
 WEZ_CONFIG_DIR="$HOME/.config/wezterm"
 mkdir -p "$WEZ_CONFIG_DIR"
 
@@ -121,10 +121,10 @@ EOF
 # 7. Set Zsh as Default Shell
 ############################################
 if [ "$SHELL" != "$(which zsh)" ]; then
-    echo "🐚 Setting Zsh as default shell..."
+    echo "Setting Zsh as default shell..."
     chsh -s $(which zsh)
 fi
 
 echo ""
-echo "✨ WezTerm & Zsh environment installation complete!"
-echo "🔄 Please log out and log back in, or restart your computer."
+echo "WezTerm & Zsh environment installation complete!"
+echo "Please log out and log back in, or restart your computer."

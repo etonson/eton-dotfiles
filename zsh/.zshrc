@@ -71,6 +71,9 @@ extract-commit() {
     fi
     local commit_ref=$1
     local target_dir=$2
+    local repo_root
+
+    repo_root=$(git rev-parse --show-toplevel) || return 1
     
     # Create target directory first so realpath doesn't fail, 
     # and ensure we have an absolute path.
@@ -78,8 +81,16 @@ extract-commit() {
     target_dir=$(realpath "$target_dir")
     (
         cd "$repo_root"
-        # --diff-filter=d excludes deleted files to prevent cp errors
-        git diff-tree --no-commit-id --name-only -r --diff-filter=d "$commit_ref" | xargs -I{} cp --parents "{}" "$target_dir"
+        # --diff-filter=d excludes deleted files to prevent cp errors.
+        git diff-tree --no-commit-id --name-status -r -M --diff-filter=d "$commit_ref" |
+            while IFS=$'\t' read -r status path new_path; do
+                if [[ "$status" == R* ]]; then
+                    echo "Moved: $path -> $new_path"
+                    path=$new_path
+                fi
+
+                cp --parents "$path" "$target_dir"
+            done
     )
     echo "Files from $commit_ref extracted to $target_dir"
 }

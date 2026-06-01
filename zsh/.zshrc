@@ -83,13 +83,13 @@ extract-commit() {
         cd "$repo_root"
         # --diff-filter=d excludes deleted files to prevent cp errors.
         git diff-tree --no-commit-id --name-status -r -M --diff-filter=d "$commit_ref" |
-            while IFS=$'\t' read -r status path new_path; do
-                if [[ "$status" == R* ]]; then
-                    echo "Moved: $path -> $new_path"
-                    path=$new_path
+            while IFS=$'\t' read -r file_status file_path new_path; do
+                if [[ "$file_status" == R* ]]; then
+                    echo "Moved: $file_path -> $new_path"
+                    file_path=$new_path
                 fi
 
-                cp --parents "$path" "$target_dir"
+                cp --parents "$file_path" "$target_dir"
             done
     )
     echo "Files from $commit_ref extracted to $target_dir"

@@ -23,35 +23,33 @@ config.line_height = 1.15 -- 增加行高
 
 -- --- 3. 色彩方案：高對比專業版 ---
 config.colors = {
-	foreground = "#FFFFFF", -- 純白文字，提升對比
-	background = "#000000", -- 純黑背景，提升對比
-	cursor_bg = "#FFFFFF",
-	cursor_fg = "#000000",
-	cursor_border = "#FFFFFF",
-	selection_bg = "#44475A",
-	scrollbar_thumb = "#44475A",
-	split = "#44475A",
+    foreground = "#D8DEE9",
+    background = "#0B1020",
 
-	ansi = {
-		"#000000", -- black
-		"#FF5555", -- red
-		"#50FA7B", -- green
-		"#F1FA8C", -- yellow
-		"#BD93F9", -- blue
-		"#FF79C6", -- magenta
-		"#8BE9FD", -- cyan
-		"#BFBFBF", -- white
-	},
-	brights = {
-		"#999999", -- black
-		"#FF6E6E", -- red
-		"#69FF94", -- green
-		"#FFFFA5", -- yellow
-		"#D6ACFF", -- blue
-		"#FF92DF", -- magenta
-		"#A4FFFF", -- cyan
-		"#FFFFFF", -- white
-	},
+    cursor_bg = "#88C0D0",
+    cursor_fg = "#0B1020",
+
+    ansi = {
+        "#2E3440",
+        "#BF616A",
+        "#A3BE8C",
+        "#EBCB8B",
+        "#81A1C1",
+        "#B48EAD",
+        "#88C0D0",
+        "#D8DEE9",
+    },
+
+    brights = {
+        "#4C566A",
+        "#D08770",
+        "#A3BE8C",
+        "#EBCB8B",
+        "#5E81AC",
+        "#B48EAD",
+        "#8FBCBB",
+        "#ECEFF4",
+    },
 }
 
 -- --- 4. 游標與滾動緩衝 ---

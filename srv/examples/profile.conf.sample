@@ -1,0 +1,14 @@
+# Copy to ~/company/remote-file/<environment>/<environment>.conf
+# Example: ~/company/remote-file/gtky/gtky.conf
+
+# SSH config alias, or use HOST/USER/PORT below.
+SSH_HEAD="example-server"
+
+# HOST="192.0.2.10"
+# USER="deploy"
+# PORT="22"
+
+# Logical remote locations. Keep credentials out of this file.
+PATH_LOG="D:/app/log"
+PATH_DEPLOY="D:/app/deploy"
+PATH_TMP="D:/app/tmp"

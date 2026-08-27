@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
 # eton-dotfiles bootstrap script
-set -e
+set -euo pipefail
 
-DOTFILES=$HOME/.dotfiles
+DOTFILES=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+LOCAL_ONLY=false
+[[ ${1:-} == "--local" ]] && LOCAL_ONLY=true
 
 echo "🚀 Starting eton-dotfiles bootstrap..."
 
 # 1. System Dependencies
 echo "📦 Installing system packages..."
-sudo apt update
-sudo apt install -y zsh git curl wget unzip fonts-powerline
+if ! $LOCAL_ONLY; then
+    sudo apt update
+    sudo apt install -y zsh git curl wget unzip fonts-powerline
+else
+    echo "Skipping packages, downloads, fonts, and shell change (--local)."
+fi
 
 # 2. XDG Setup & Symlinks
 echo "🔗 Setting up symbolic links..."
@@ -26,6 +32,9 @@ echo "🔗 Linking WezTerm config..."
 rm -rf ~/.config/wezterm
 ln -s "$DOTFILES/wezterm" ~/.config/wezterm
 
+# Remote environment interface
+"$DOTFILES/srv/install.sh"
+
 # ZDOTDIR in ~/.zshenv
 if [ ! -f "$HOME/.zshenv" ] || ! grep -q "ZDOTDIR" "$HOME/.zshenv"; then
     echo 'export ZDOTDIR=$HOME/.config/zsh' >> "$HOME/.zshenv"
@@ -33,6 +42,7 @@ if [ ! -f "$HOME/.zshenv" ] || ! grep -q "ZDOTDIR" "$HOME/.zshenv"; then
 fi
 
 # 3. Oh My Zsh & Plugins
+if ! $LOCAL_ONLY; then
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -60,6 +70,7 @@ fi
 # 5. Set Default Shell
 if [ "$SHELL" != "$(which zsh)" ]; then
     chsh -s $(which zsh)
+fi
 fi
 
 echo "✨ Bootstrap complete! Please restart your terminal."

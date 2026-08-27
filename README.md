@@ -15,6 +15,7 @@ My unified professional development environment configuration.
 │   └── README.md
 ├── scripts/            # 跨工具的安裝與檢查腳本
 │   └── bootstrap.sh    # 一鍵安裝所有東西的總入口
+├── srv/                # 遠端環境路徑解析與 SSH/SCP 操作
 ├── .zshenv             # 放在 $HOME 的引導檔 (指向 ~/dotfiles/zsh)
 ├── README.md           # 整個環境的總體說明
 └── .gitignore
@@ -25,6 +26,7 @@ My unified professional development environment configuration.
 - `zsh/`: Zsh configuration (Powerlevel10k, plugins, and custom functions like `extract-commit`).
 - `wezterm/`: WezTerm configuration with high-contrast Dracula theme.
 - `scripts/`: System bootstrap and automation scripts.
+- `srv/`: Stateless-first remote operations (`info`, `resolve`, `get`, `put`, `exec`).
 
 ## 🚀 Quick Start (New Machine)
 

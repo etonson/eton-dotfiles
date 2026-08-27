@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="0.1.0"
+CONFIG_HOME="${SRV_CONFIG_HOME:-$HOME/company/remote-file}"
+STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}/srv"
+
+die() { printf 'srv: %s\n' "$*" >&2; exit 1; }
+usage() {
+  cat <<'EOF'
+Usage:
+  srv envs
+  srv info [ENV]
+  srv resolve [ENV] LOCATION
+  srv get [ENV] REMOTE [LOCAL]
+  srv put [ENV] LOCATION LOCAL...
+  srv exec [ENV] COMMAND [ARG...]
+  srv use ENV
+
+ENV may be omitted after `srv use`. Canonical commands should always include it.
+Config: $SRV_CONFIG_HOME/<env>/<env>.conf (default: ~/company/remote-file)
+EOF
+}
+
+profile_file() {
+  local env=$1 f
+  for f in "$CONFIG_HOME/$env/$env.conf" "$CONFIG_HOME/$env.conf" "$CONFIG_HOME/$env/config"; do
+    [[ -f $f ]] && { printf '%s\n' "$f"; return; }
+  done
+  die "environment '$env' not found under $CONFIG_HOME"
+}
+
+is_env() {
+  [[ -f "$CONFIG_HOME/$1/$1.conf" || -f "$CONFIG_HOME/$1.conf" || -f "$CONFIG_HOME/$1/config" ]]
+}
+current_env() { [[ -f "$STATE_HOME/current" ]] && IFS= read -r REPLY < "$STATE_HOME/current" && printf '%s\n' "$REPLY"; }
+
+pick_env() {
+  if (($#)) && is_env "$1"; then ENV_NAME=$1; shift
+  else ENV_NAME=$(current_env) || die "environment required (or run: srv use ENV)"
+  fi
+  REMAINING=("$@")
+}
+
+load_profile() {
+  local file
+  file=$(profile_file "$ENV_NAME")
+  unset SSH_HEAD HOST USER PORT BASE GET_PATH TARGET_PATH PUSH_PATH DEFAULT_FILES
+  set -a
+  # shellcheck disable=SC1090
+  source "$file"
+  set +a
+  PROFILE_FILE=$file
+  REMOTE=${SSH_HEAD:-${HOST:-}}
+  [[ -n $REMOTE ]] || die "$file must define SSH_HEAD or HOST"
+  if [[ -n ${HOST:-} && -n ${USER:-} && $HOST != *@* ]]; then REMOTE="$USER@$HOST"; fi
+  SCP_ARGS=(); SSH_ARGS=()
+  [[ -n ${PORT:-} ]] && { SCP_ARGS=(-P "$PORT"); SSH_ARGS=(-p "$PORT"); }
+  return 0
+}
+
+normalize_path() {
+  local value=$1 rest=${2:-}
+  value=${value%/}
+  [[ -z $rest ]] && { printf '%s\n' "$value"; return; }
+  [[ $value == */*.* ]] && die "'$1' is a file alias and cannot have a child path"
+  printf '%s/%s\n' "$value" "${rest#/}"
+}
+
+resolve() {
+  local spec=$1 alias rest var value
+  [[ -n $spec ]] || die "remote location is required"
+  if [[ $spec == /* || $spec =~ ^[A-Za-z]:[/\\] ]]; then printf '%s\n' "$spec"; return; fi
+  alias=${spec%%/*}; [[ $spec == */* ]] && rest=${spec#*/} || rest=
+  var="PATH_${alias^^}"; var=${var//-/_}; value=${!var:-}
+  case $alias in
+    base) value=${value:-${BASE:-}} ;;
+    get) value=${value:-${GET_PATH:-${BASE:-}}} ;;
+    deploy) value=${value:-${TARGET_PATH:-${PUSH_PATH:-}}} ;;
+    log) value=${value:-${GET_LOG:-}} ;;
+    access) value=${value:-${GET_ACCESS:-}} ;;
+    app) value=${value:-${GET_APP:-}} ;;
+    tmp) value=${value:-${GET_TMP:-}} ;;
+  esac
+  [[ -n $value ]] || die "unknown location alias '$alias' in $ENV_NAME"
+  normalize_path "$value" "$rest"
+}
+
+list_envs() {
+  local f name
+  shopt -s nullglob
+  for f in "$CONFIG_HOME"/*/*.conf "$CONFIG_HOME"/*.conf "$CONFIG_HOME"/*/config; do
+    if [[ $f == "$CONFIG_HOME"/*.conf ]]; then name=$(basename "$f" .conf); else name=$(basename "${f%/*}"); fi
+    printf '%s\n' "$name"
+  done | sort -u
+}
+
+cmd=${1:-help}; shift || true
+case $cmd in
+  envs) list_envs ;;
+  use)
+    (($# == 1)) || die "usage: srv use ENV"
+    is_env "$1" || die "environment '$1' not found under $CONFIG_HOME"
+    mkdir -p "$STATE_HOME"; printf '%s\n' "$1" > "$STATE_HOME/current"
+    printf 'Current environment: %s\n' "$1"
+    ;;
+  info)
+    pick_env "$@"; ((${#REMAINING[@]} == 0)) || die "usage: srv info [ENV]"; load_profile
+    printf '%-12s: %s\n' Environment "$ENV_NAME" Remote "$REMOTE" Port "${PORT:-22}" Transport ssh Config "$PROFILE_FILE"
+    for key in base get deploy log access app tmp; do
+      if value=$(resolve "$key" 2>/dev/null); then printf '%-12s: %s\n' "${key^}" "$value"; fi
+    done
+    ;;
+  resolve)
+    pick_env "$@"; ((${#REMAINING[@]} == 1)) || die "usage: srv resolve [ENV] LOCATION"; load_profile; resolve "${REMAINING[0]}" ;;
+  get)
+    pick_env "$@"; ((${#REMAINING[@]} >= 1 && ${#REMAINING[@]} <= 2)) || die "usage: srv get [ENV] REMOTE [LOCAL]"; load_profile
+    remote_path=$(resolve "${REMAINING[0]}"); local_path=${REMAINING[1]:-.}
+    scp "${SCP_ARGS[@]}" -- "$REMOTE:$remote_path" "$local_path"
+    ;;
+  put)
+    pick_env "$@"; ((${#REMAINING[@]} >= 2)) || die "usage: srv put [ENV] LOCATION LOCAL..."; load_profile
+    remote_path=$(resolve "${REMAINING[0]}")
+    scp "${SCP_ARGS[@]}" -- "${REMAINING[@]:1}" "$REMOTE:$remote_path"
+    ;;
+  exec)
+    pick_env "$@"; ((${#REMAINING[@]} >= 1)) || die "usage: srv exec [ENV] COMMAND [ARG...]"; load_profile
+    ssh "${SSH_ARGS[@]}" -- "$REMOTE" "${REMAINING[@]}"
+    ;;
+  -V|--version) printf 'srv %s\n' "$VERSION" ;;
+  help|-h|--help) usage ;;
+  *) die "unknown command '$cmd' (try: srv help)" ;;
+esac

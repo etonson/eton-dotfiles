@@ -63,38 +63,6 @@ alias ss='flameshot gui'
 alias vim='nvim'
 alias v='nvim'
 
-# Extract files changed in a git commit or range to a target directory
-extract-commit() {
-    if [[ $# -lt 2 ]]; then
-        echo "Usage: extract-commit <commit-ref> <target-dir>"
-        return 1
-    fi
-    local commit_ref=$1
-    local target_dir=$2
-    local repo_root
-
-    repo_root=$(git rev-parse --show-toplevel) || return 1
-    
-    # Create target directory first so realpath doesn't fail, 
-    # and ensure we have an absolute path.
-    mkdir -p "$target_dir"
-    target_dir=$(realpath "$target_dir")
-    (
-        cd "$repo_root"
-        # --diff-filter=d excludes deleted files to prevent cp errors.
-        git diff-tree --no-commit-id --name-status -r -M --diff-filter=d "$commit_ref" |
-            while IFS=$'\t' read -r file_status file_path new_path; do
-                if [[ "$file_status" == R* ]]; then
-                    echo "Moved: $file_path -> $new_path"
-                    file_path=$new_path
-                fi
-
-                cp --parents "$file_path" "$target_dir"
-            done
-    )
-    echo "Files from $commit_ref extracted to $target_dir"
-}
-
 autoload -Uz compinit
 compinit
 

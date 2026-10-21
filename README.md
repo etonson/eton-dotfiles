@@ -40,6 +40,27 @@ chmod +x scripts/bootstrap.sh
 ./scripts/bootstrap.sh
 ```
 
+## Custom workstation scripts
+
+`bin/` contains only the six custom commands: `extract-commit`, `svn-legacy`,
+`quiet-dev`, `focus-build`, `full-power`, and `system-default`.
+Edit these versioned sources, then deploy with the `eton-ansible` workspace
+playbook. Its `local_scripts` role copies them to `/usr/local/bin` as
+`root:root`, mode `0755`. Homelab does not include this role.
+The standalone dotfiles bootstrap does not install these system commands.
+
+The four power commands target AMD CPU sysfs interfaces and require
+`powerprofilesctl`; they request sudo when run as a regular user. Deployment
+does not execute them or switch the power profile. Supported EPP values and
+power profiles depend on the machine.
+
+`openssl/svn-legacy.cnf` is deployed to `~/.config/openssl/svn-legacy.cnf`.
+It enables legacy TLS settings only for calls through `svn-legacy`; use the
+regular `svn` command for other servers.
+
+Installed binaries and package links (`nvim`, `syft`, `gemini`, `prettier`,
+`dbvis`) are excluded. Install their packages separately.
+
 ## ✨ Key Features
 
 - **XDG Compliant**: Configs are symlinked to `~/.config/` but managed centrally in `~/dotfiles`.

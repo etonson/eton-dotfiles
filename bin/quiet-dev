@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# CPU sysfs settings require root.
+if (( EUID != 0 )); then
+  exec sudo -- "$0" "$@"
+fi
+
+echo "▶ quiet-dev: 安靜開發模式 (AMD / Ubuntu 24.04)"
+
+# 1. 設為省電模式（GNOME / systemd 官方）
+powerprofilesctl set power-saver
+
+# 2. AMD pstate：設定 EPP = power
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+  [ -f "$cpu" ] && echo power | tee "$cpu" > /dev/null
+done
+
+# 3. 限制 boost（關鍵，風扇會明顯安靜）
+if [ -f /sys/devices/system/cpu/cpufreq/boost ]; then
+  echo 0 | tee /sys/devices/system/cpu/cpufreq/boost > /dev/null
+fi
+
+echo "✓ quiet-dev applied:"
+echo "  - power profile: power-saver"
+echo "  - EPP: power"
+echo "  - CPU boost: off"

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# CPU sysfs settings require root.
+if (( EUID != 0 )); then
+  exec sudo -- "$0" "$@"
+fi
+
+echo "▶ focus-build: 編譯 / 測試模式 (AMD)"
+
+# 1. 平衡模式
+powerprofilesctl set balanced
+
+# 2. EPP = balance_performance
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+  [ -f "$cpu" ] && echo balance_performance | tee "$cpu" > /dev/null
+done
+
+# 3. 開啟 boost（但不極端）
+if [ -f /sys/devices/system/cpu/cpufreq/boost ]; then
+  echo 1 | tee /sys/devices/system/cpu/cpufreq/boost > /dev/null
+fi
+
+echo "✓ focus-build applied:"
+echo "  - profile: balanced"
+echo "  - EPP: balance_performance"
+echo "  - boost: on"

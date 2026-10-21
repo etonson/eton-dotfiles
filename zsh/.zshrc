@@ -16,6 +16,11 @@ export LS_COLORS="di=1;34:fi=0:ln=1;36:pi=40;33:so=1;35:bd=40;33;01:cd=40;33;01:
 export WINIT_UNIX_BACKEND=x11
 export XMODIFIERS="@im=none"
 
+# Keep user tools and locally installed commands available after moving dotfiles.
+typeset -U path PATH
+path=("$HOME/.local/bin" /usr/local/bin $path)
+export PATH
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -38,7 +43,7 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 export EDITOR=nano
 
@@ -52,10 +57,10 @@ alias ls='ls --color=auto'
 alias ll='ls -lah'
 alias la='ls -A'
 
-alias qd='/bin/quiet-dev'
-alias fb='/bin/focus-build'
-alias fp='/bin/full-power'
-alias sd='/bin/system-default'
+(( $+commands[quiet-dev] )) && alias qd='quiet-dev'
+(( $+commands[focus-build] )) && alias fb='focus-build'
+(( $+commands[full-power] )) && alias fp='full-power'
+(( $+commands[system-default] )) && alias sd='system-default'
 
 alias ss='flameshot gui'
 
@@ -66,7 +71,7 @@ alias v='nvim'
 autoload -Uz compinit
 compinit
 
-[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
+[[ ! -f "${ZDOTDIR:-${${(%):-%x}:A:h}}/.p10k.zsh" ]] || source "${ZDOTDIR:-${${(%):-%x}:A:h}}/.p10k.zsh"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -74,16 +79,13 @@ export NVM_DIR="$HOME/.nvm"
 
 # Maven
 export MAVEN_HOME=/opt/apache-maven-3.9.12
-export PATH=$MAVEN_HOME/bin:$PATH
+[[ ! -d "$MAVEN_HOME/bin" ]] || path=("$MAVEN_HOME/bin" $path)
 export EDITOR=nvim
 export VISUAL=nvim
 
-# Created by `pipx` on 2026-04-28 03:02:19
-export PATH="$PATH:/home/sixson/.local/bin"
+# bun
+export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
+[[ ! -d "$BUN_INSTALL/bin" ]] || path=("$BUN_INSTALL/bin" $path)
 
 # bun completions
-[ -s "/home/sixson/.bun/_bun" ] && source "/home/sixson/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+[[ ! -s "$BUN_INSTALL/_bun" ]] || source "$BUN_INSTALL/_bun"

@@ -11,7 +11,6 @@ config.window_padding = {
 	bottom = 12,
 }
 config.window_background_opacity = 0.95 -- 提高對比度，增加背景遮罩
-config.macos_window_background_blur = 20 -- 支援背景模糊
 config.hide_tab_bar_if_only_one_tab = true -- 只有一個分頁時隱藏分頁列
 config.window_decorations = "TITLE | RESIZE" -- 保留標題列與縮放邊框，方便操作
 config.window_close_confirmation = "NeverPrompt" -- 關閉視窗時不跳出確認警告

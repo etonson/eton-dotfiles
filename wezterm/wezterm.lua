@@ -10,7 +10,7 @@ config.window_padding = {
 	top = 12,
 	bottom = 12,
 }
-config.window_background_opacity = 0.95 -- 提高對比度，增加背景遮罩
+config.window_background_opacity = 0.96 -- 提高對比度，增加背景遮罩
 config.hide_tab_bar_if_only_one_tab = true -- 只有一個分頁時隱藏分頁列
 config.window_decorations = "TITLE | RESIZE" -- 保留標題列與縮放邊框，方便操作
 config.window_close_confirmation = "NeverPrompt" -- 關閉視窗時不跳出確認警告
@@ -21,35 +21,24 @@ config.font_size = 14.0
 config.line_height = 1.15 -- 增加行高
 
 -- --- 3. 色彩方案：高對比專業版 ---
+-- FOREST-RETREAT-COLORS-BEGIN
 config.colors = {
-    foreground = "#D8DEE9",
-    background = "#0B1020",
-
-    cursor_bg = "#88C0D0",
-    cursor_fg = "#0B1020",
-
-    ansi = {
-        "#2E3440",
-        "#BF616A",
-        "#A3BE8C",
-        "#EBCB8B",
-        "#81A1C1",
-        "#B48EAD",
-        "#88C0D0",
-        "#D8DEE9",
-    },
-
-    brights = {
-        "#4C566A",
-        "#D08770",
-        "#A3BE8C",
-        "#EBCB8B",
-        "#5E81AC",
-        "#B48EAD",
-        "#8FBCBB",
-        "#ECEFF4",
-    },
+  foreground = "#D3C6AA",
+  background = "#2D353B",
+  cursor_bg = "#D3C6AA",
+  cursor_fg = "#2D353B",
+  selection_bg = "#543A48",
+  selection_fg = "#D3C6AA",
+  ansi = {
+    "#475258", "#E67E80", "#A7C080", "#DBBC7F",
+    "#7FBBB3", "#D699B6", "#83C092", "#D3C6AA",
+  },
+  brights = {
+    "#475258", "#E67E80", "#A7C080", "#DBBC7F",
+    "#7FBBB3", "#D699B6", "#83C092", "#D3C6AA",
+  },
 }
+-- FOREST-RETREAT-COLORS-END
 
 -- --- 4. 游標與滾動緩衝 ---
 config.default_cursor_style = "BlinkingBar"

@@ -24,6 +24,15 @@ The script will:
 
 ## Features
 
+### Directory colors
+
+`LS_COLORS` in `.zshrc` uses bold yellow without a background for
+other-writable directories (`ow`, such as mode `0777`). Other-writable
+directories with the sticky bit (`tw`, such as mode `1777`) use bold magenta;
+ordinary directories and sticky-only directories (`st`) use bold blue.
+
+Reload with `source "${ZDOTDIR:-$HOME}/.zshrc"` or open a new terminal.
+
 ### Custom Functions
 
 #### `extract-commit`

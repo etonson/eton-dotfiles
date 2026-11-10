@@ -9,8 +9,9 @@ if [[ -t 0 ]]; then
   stty icrnl
 fi
 
-# 高對比 LS_COLORS (參考 Terminator_zsh設定.md)
-export LS_COLORS="di=1;34:fi=0:ln=1;36:pi=40;33:so=1;35:bd=40;33;01:cd=40;33;01:ex=1;32"
+# 高對比 LS_COLORS：目錄不加底色，避免與終端主題產生低對比。
+# ow: 其他使用者可寫入（如 777）；tw: 同時有 sticky bit（如 1777）；st: 僅有 sticky bit。
+export LS_COLORS="di=1;34:fi=0:ln=1;36:pi=40;33:so=1;35:bd=40;33;01:cd=40;33;01:ex=1;32:ow=1;33:tw=1;35:st=1;34"
 
 # 修復 Wayland 環境下 Alacritty 的 Enter/Backspace 連打問題
 export WINIT_UNIX_BACKEND=x11

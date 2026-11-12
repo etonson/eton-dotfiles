@@ -79,7 +79,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Maven
-export MAVEN_HOME=/opt/apache-maven-3.9.12
+export MAVEN_HOME=/opt/apache-maven-4.0.0/
 [[ ! -d "$MAVEN_HOME/bin" ]] || path=("$MAVEN_HOME/bin" $path)
 export EDITOR=nvim
 export VISUAL=nvim
